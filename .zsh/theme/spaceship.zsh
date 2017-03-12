@@ -5,6 +5,10 @@
 # License: MIT
 # https://github.com/denysdovhan/spaceship-zsh-theme
 
+# env
+SPACESHIP_GIT_SHOW=true
+SPACESHIP_PROMPT_ADD_NEWLINE=false
+
 NEWLINE='
 '
 
@@ -68,7 +72,7 @@ SPACESHIP_VI_MODE_NORMAL="${SPACESHIP_VI_MODE_NORMAL:-[N]}"
 
 # Username.
 # If user is root, then pain it in red. Otherwise, just print in yellow.
-function spaceship_user() {
+spaceship_user() {
   if [[ $USER == 'root' ]]; then
     echo -n "%{$fg_bold[red]%}"
   else
@@ -81,7 +85,7 @@ function spaceship_user() {
 # Username and SSH host
 # If there is an ssh connections, then show user and current machine.
 # If user is not $USER, then show username.
-function spaceship_host() {
+spaceship_host() {
   if [[ -n $SSH_CONNECTION ]]; then
     echo -n "$(spaceship_user)"
 
@@ -104,7 +108,7 @@ function spaceship_host() {
 
 # Current directory.
 # Return only three last items of path
-function spaceship_current_dir() {
+spaceship_current_dir() {
   echo -n "%{$fg_bold[cyan]%}"
   echo -n "%${SPACESHIP_PROMPT_TRUNC}~";
   echo -n "%{$reset_color%}"
@@ -112,7 +116,7 @@ function spaceship_current_dir() {
 
 # Uncommitted changes.
 # Check for uncommitted changes in the index.
-function spaceship_git_uncomitted() {
+spaceship_git_uncomitted() {
   if ! $(git diff --quiet --ignore-submodules --cached); then
     echo -n "${SPACESHIP_GIT_UNCOMMITTED}"
   fi
@@ -120,7 +124,7 @@ function spaceship_git_uncomitted() {
 
 # Unstaged changes.
 # Check for unstaged changes.
-function spaceship_git_unstaged() {
+spaceship_git_unstaged() {
   if ! $(git diff-files --quiet --ignore-submodules --); then
     echo -n "${SPACESHIP_GIT_UNSTAGED}"
   fi
@@ -128,7 +132,7 @@ function spaceship_git_unstaged() {
 
 # Untracked files.
 # Check for untracked files.
-function spaceship_git_untracked() {
+spaceship_git_untracked() {
   if [ -n "$(git ls-files --others --exclude-standard)" ]; then
     echo -n "${SPACESHIP_GIT_UNTRACKED}"
   fi
@@ -136,7 +140,7 @@ function spaceship_git_untracked() {
 
 # Stashed changes.
 # Check for stashed changes.
-function spaceship_git_stashed() {
+spaceship_git_stashed() {
   if $(git rev-parse --verify refs/stash &>/dev/null); then
     echo -n "${SPACESHIP_GIT_STASHED}"
   fi
@@ -144,7 +148,7 @@ function spaceship_git_stashed() {
 
 # Unpushed and unpulled commits.
 # Get unpushed and unpulled commits from remote and draw arrows.
-function spaceship_git_unpushed_unpulled() {
+spaceship_git_unpushed_unpulled() {
   # check if there is an upstream configured for this branch
   command git rev-parse --abbrev-ref @'{u}' &>/dev/null || return
 
@@ -165,7 +169,7 @@ function spaceship_git_unpushed_unpulled() {
 
 # Git status.
 # Collect indicators, git branch and pring string.
-function spaceship_git_status() {
+spaceship_git_status() {
   [[ $SPACESHIP_GIT_SHOW == false ]] && return
 
   # Check if the current directory is in a Git repository.
@@ -201,7 +205,7 @@ function spaceship_git_status() {
 
 # Virtual environment.
 # Show current virtual environment (Python).
-function spaceship_venv_status() {
+spaceship_venv_status() {
   [[ $SPACESHIP_VENV_SHOW == false ]] && return
 
   # Check if the current directory running via Virtualenv
@@ -217,7 +221,7 @@ function spaceship_venv_status() {
 
 # Pyenv
 # Show current version of pyenv python, including system.
-function spaceship_pyenv_status() {
+spaceship_pyenv_status() {
   [[ $SPACESHIP_PYENV_SHOW == false ]] && return
 
   $(type pyenv >/dev/null 2>&1) || return # Do nothing if pyenv is not installed
@@ -248,7 +252,7 @@ function spaceship_pyenv_status() {
 
 # NVM
 # Show current version of node, exception system.
-function spaceship_nvm_status() {
+spaceship_nvm_status() {
   [[ $SPACESHIP_NVM_SHOW == false ]] && return
 
   $(type nvm >/dev/null 2>&1) || return
@@ -267,7 +271,7 @@ function spaceship_nvm_status() {
 
 # Ruby
 # Show current version of Ruby
-function spaceship_ruby_version() {
+spaceship_ruby_version() {
   [[ $SPACESHIP_RUBY_SHOW == false ]] && return
 
   if command -v rvm-prompt > /dev/null 2>&1; then
@@ -290,7 +294,7 @@ function spaceship_ruby_version() {
 
 # Swift
 # Show current version of Swift
-function spaceship_swift_version() {
+spaceship_swift_version() {
   command -v swiftenv > /dev/null 2>&1 || return
 
   if [[ $SPACESHIP_SWIFT_SHOW_GLOBAL == true ]] ; then
@@ -311,7 +315,7 @@ function spaceship_swift_version() {
 
 # Xcode
 # Show current version of Xcode
-function spaceship_xcode_version() {
+spaceship_xcode_version() {
   command -v xcenv > /dev/null 2>&1 || return
 
   if [[ $SPACESHIP_SWIFT_SHOW_GLOBAL == true ]] ; then
@@ -337,14 +341,14 @@ function spaceship_xcode_version() {
 }
 
 # Temporarily switch to vi-mode
-function spaceship_enable_vi_mode() {
+spaceship_enable_vi_mode() {
   function zle-keymap-select() { zle reset-prompt; zle -R; };
   zle -N zle-keymap-select;
   bindkey -v;
 }
 
 # Show current vi_mode mode
-function spaceship_vi_mode() {
+spaceship_vi_mode() {
   if bindkey | grep "vi-quoted-insert" > /dev/null 2>&1; then # check if vi-mode enabled
     echo -n "%{$fg_bold[white]%}"
 
@@ -366,7 +370,7 @@ function spaceship_vi_mode() {
 # Command prompt.
 # Paint $PROMPT_SYMBOL in red if previous command was fail and
 # paint in green if everything was OK.
-function spaceship_return_status() {
+spaceship_return_status() {
   echo -n "%(?.%{$fg[green]%}.%{$fg[red]%})"
   echo -n "%B${SPACESHIP_PROMPT_SYMBOL}%b "
   echo -n "%{$reset_color%}"
@@ -374,7 +378,7 @@ function spaceship_return_status() {
 
 # Entry point
 # Compose whole prompt from smaller parts
-function spaceship_prompt() {
+spaceship_prompt() {
   # Should it add a new line before the prompt?
   [[ $SPACESHIP_PROMPT_ADD_NEWLINE == true ]] && echo -n "$NEWLINE"
 
@@ -401,7 +405,7 @@ function spaceship_prompt() {
 }
 
 # PS2 - continuation interactive prompt
-function spaceship_ps2_prompt() {
+spaceship_ps2_prompt() {
   echo -n "%{$fg_bold[yellow]%}"
   echo -n "%{$SPACESHIP_PROMPT_SYMBOL%} "
   echo -n "%{$reset_color%}"
@@ -411,8 +415,8 @@ function spaceship_ps2_prompt() {
 VIRTUAL_ENV_DISABLE_PROMPT=true
 
 # Expose Spaceship to environment variables
-PROMPT=$(spaceship_prompt)
-PS2=$(spaceship_ps2_prompt)
+PROMPT="$(spaceship_prompt)"
+PS2="$(spaceship_ps2_prompt)"
 
 # LSCOLORS
 export LSCOLORS="Gxfxcxdxbxegedabagacab"

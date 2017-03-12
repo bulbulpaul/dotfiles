@@ -11,6 +11,9 @@ source $ZPLUG_HOME/init.zsh
 JAVA_OPTS="-Dfile.encoding=UTF-8"
 export JAVA_OPTS
 
+JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_121.jdk/Contents/Home"
+export PATH=$JAVA_HOME/bin:$PATH
+
 # ----Global----
 HISTFILE=~/.zsh_history
 HISTSIZE=10000
@@ -36,13 +39,21 @@ setopt auto_pushd
 # Beepオフ
 setopt nolistbeep
 
+setopt prompt_subst
+
 # emacs key bind
 bindkey -e
 
+# ----prompt theme----
+autoload -U promptinit; promptinit
+prompt pure
+
 # ----zstyle----
-zstyle :compinstall filename '/Users/nookada/.zshrc'
+zstyle :compinstall filename '/Users/$USER/.zshrc'
 # 補完後、メニュー選択モードになり左右キーで移動が出来る
 zstyle ':completion:*:default' menu select=2
+
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 
 # ----auto load----
 # 補完
@@ -59,14 +70,25 @@ export LS_COLORS='di=01;34:ln=01;35:so=01;32:ex=01;31:bd=46;34:cd=43;34:su=41;30
 # 補完をカラーに
 zstyle ':completion:*' list-colors 'di=;34;1' 'ln=;35;1' 'so=;32;1' 'ex=31;1' 'bd=46;34' 'cd=43;34'
 
-
 # ----alias----
+alias ls='ls -G'
 alias lst='ls -ltr -G'
 alias l='ls -ltra -G'
 alias la='ls -la -G'
 alias ll='ls -l -G'
 alias diff='diff -u'
 alias g='git'
+alias ga='git add'
+alias gaa='git add -all'
+alias gcb='git checkout -b'
+alias gcm='git commit -m'
+alias gca='git commit -ammend'
+alias gsb='git status -sb'
+alias gss='git status -s'
+alias gsi='git submodule init'
+alias glog='git log --oneline --decorate --graph'
+alias gloga='git log --oneline --decorate --graph --all'
+alias gd='git diff'
 alias e='emacs'
 alias cdo='cd-gitroot'
 
@@ -80,12 +102,12 @@ bindkey '^s' history-incremental-pattern-search-forward
 zplug "zsh-users/zsh-syntax-highlighting", defer:3
 # コマンド補完
 zplug "zsh-users/zsh-completions"
-# git root
-zplug "mollifier/cd-gitroot"
+# auto suggest
+zplug "zsh-users/zsh-autosuggestions"
 # anyframe
 zplug "mollifier/anyframe"
 
-zplug load --verbose
+zplug load
 
 # ----bind key----
 bindkey '^xb' anyframe-widget-cdr
@@ -117,5 +139,12 @@ zstyle ":anyframe:selector:" use percol
 # expressly specify to use fzf
 zstyle ":anyframe:selector:" use fzf
 
-# ----prompt theme----
-source ~/.zsh/theme/spaceship.zsh
+# pyenv init
+if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
+# rbenv
+eval "$(rbenv init -)"
+export PATH="/usr/local/opt/node@6/bin:$PATH"
+
+if [ ~/.zshrc -nt ~/.zshrc.zwc ]; then
+  zcompile ~/.zshrc
+fi
