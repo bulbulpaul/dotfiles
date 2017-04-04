@@ -11,6 +11,9 @@ source $ZPLUG_HOME/init.zsh
 JAVA_OPTS="-Dfile.encoding=UTF-8"
 export JAVA_OPTS
 
+# go
+export GOPATH=$HOME/.go
+
 JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_121.jdk/Contents/Home"
 export PATH=$JAVA_HOME/bin:$PATH
 
@@ -90,7 +93,6 @@ alias glog='git log --oneline --decorate --graph'
 alias gloga='git log --oneline --decorate --graph --all'
 alias gd='git diff'
 alias e='emacs'
-alias cdo='cd-gitroot'
 
 # ----bind key----
 # Ctrl+rでヒストリーのインクリメンタルサーチ、Ctrl+sで逆順
@@ -145,6 +147,10 @@ if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
 eval "$(rbenv init -)"
 export PATH="/usr/local/opt/node@6/bin:$PATH"
 
+# dirnev
+eval "$(direnv hook zsh)"
+
 if [ ~/.zshrc -nt ~/.zshrc.zwc ]; then
   zcompile ~/.zshrc
 fi
+
